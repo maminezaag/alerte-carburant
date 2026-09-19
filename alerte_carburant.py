@@ -19,7 +19,7 @@ URL = "https://standorte.star.de/niedersachsen/oldenburg/bloherfelder-str.-126/5
 SEUIL = 2.3  # €/L
 
 HEURE_DEBUT = 6   # 6h du matin, heure de Berlin
-HEURE_FIN = 21    # 21h, heure de Berlin
+HEURE_FIN = 22    # 21h, heure de Berlin
 
 EMAIL_EXPEDITEUR = os.environ["GMAIL_ADDRESS"]
 EMAIL_MOT_DE_PASSE = os.environ["GMAIL_APP_PASSWORD"]
