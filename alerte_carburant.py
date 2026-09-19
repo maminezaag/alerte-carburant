@@ -11,17 +11,17 @@ import sys
 import smtplib
 from email.mime.text import MIMEText
 from pathlib import Path
- 
+import os
 import requests
  
 # --- Configuration ---
 URL = "https://standorte.star.de/niedersachsen/oldenburg/bloherfelder-str.-126/581"
 SEUIL = 2.3  # €/L - envoie une alerte si le prix Super est <= à cette valeur
  
-EMAIL_EXPEDITEUR = "gasri.tn@gmail.com"       # <-- à remplir : le compte qui ENVOIE l'email
-EMAIL_MOT_DE_PASSE = ""        # <-- mot de passe d'application Gmail (voir notes)
-EMAIL_DESTINATAIRE = "m.amin.zaag@gmail.com"
- 
+EMAIL_EXPEDITEUR = os.environ["GMAIL_ADDRESS"]
+EMAIL_MOT_DE_PASSE = os.environ["GMAIL_APP_PASSWORD"]
+EMAIL_DESTINATAIRE = os.environ["GMAIL_TO"]
+
 # Fichier utilisé pour ne pas ré-envoyer un email à chaque vérification
 # tant que le prix reste sous le seuil (sinon: un email toutes les 10 min)
 FICHIER_ETAT = Path(__file__).parent / "dernier_etat_alerte.txt"
