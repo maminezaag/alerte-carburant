@@ -1,8 +1,6 @@
 name: Alerte carburant
 
 on:
-  schedule:
-    - cron: '*/10 4-20 * * *'
   workflow_dispatch:
 
 permissions:
@@ -34,6 +32,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add dernier_etat_alerte.txt
+          git add dernier_etat_alerte.txt 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Mise à jour du prix de référence"
           git push
