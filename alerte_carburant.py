@@ -102,8 +102,9 @@ def main():
 
     dernier_prix = lire_dernier_prix()
 
-    # --- Premier lancement ---
+    # --- Premier lancement : pas de comparaison possible ---
     if dernier_prix is None:
+        ecrire_dernier_prix(prix)
         if prix <= SEUIL:
             try:
                 envoyer_email(prix, None, True, 0.0)
@@ -113,25 +114,32 @@ def main():
                 sys.exit(1)
         else:
             print(f"Premier relevé — {prix:.3f} € enregistré comme référence (au-dessus du seuil).")
-        ecrire_dernier_prix(prix)
         return
 
-    # --- Lancements suivants ---
-    if prix >= dernier_prix:
-        print(f"Prix inchangé ou en hausse ({prix:.3f} € vs {dernier_prix:.3f} €) — pas d'alerte.")
+    # --- Prix strictement inchangé depuis le dernier relevé : rien à faire ---
+    if prix == dernier_prix:
+        print(f"Prix inchangé ({prix:.3f} €) — pas d'alerte.")
         return
 
-    # Ici : le prix a baissé
-    baisse = dernier_prix - prix
+    # --- Le prix a changé (en hausse ou en baisse) ---
+    baisse = max(0.0, dernier_prix - prix)   # > 0 seulement si ça a vraiment baissé
     seuil_atteint = prix <= SEUIL
 
-    try:
-        envoyer_email(prix, dernier_prix, seuil_atteint, baisse)
-        print(f"Baisse détectée ({baisse:.3f} €) — email envoyé.")
-    except Exception as e:
-        print(f"[ERREUR] Envoi de l'email échoué : {e}")
-        sys.exit(1)
+    # Règle demandée : on alerte dans les DEUX cas, indépendamment l'un de l'autre :
+    #   - toute baisse de prix (même minime, même encore au-dessus du seuil)
+    #   - le prix est sous le seuil (même s'il vient de remonter un peu)
+    if baisse > 0 or seuil_atteint:
+        try:
+            envoyer_email(prix, dernier_prix, seuil_atteint, baisse)
+            print(f"Alerte envoyée (baisse={baisse:.3f} €, sous le seuil={seuil_atteint}).")
+        except Exception as e:
+            print(f"[ERREUR] Envoi de l'email échoué : {e}")
+            sys.exit(1)
+    else:
+        print(f"Prix en hausse et au-dessus du seuil ({prix:.3f} € vs {dernier_prix:.3f} €) — pas d'alerte.")
 
+    # On met TOUJOURS à jour la référence, alerte envoyée ou non, pour que la
+    # prochaine comparaison se fasse par rapport à ce dernier prix observé.
     ecrire_dernier_prix(prix)
 
 
