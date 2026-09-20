@@ -1,7 +1,9 @@
 """
 Surveillance du prix du carburant "Super" (ORLEN Bloherfelder Str. 126, Oldenburg)
 Envoie un email si le prix atteint le seuil OU s'il a baissé depuis la dernière
-vérification — et uniquement entre 6h et 21h, heure de Berlin.
+vérification.
+La fenêtre horaire d'exécution est gérée par le planificateur externe (cron-job.org),
+pas par ce script.
 """
 
 import os
@@ -10,28 +12,17 @@ import sys
 import smtplib
 from email.mime.text import MIMEText
 from pathlib import Path
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 import requests
 
 URL = "https://standorte.star.de/niedersachsen/oldenburg/bloherfelder-str.-126/581"
 SEUIL = 2.2  # €/L
 
-HEURE_DEBUT = 6   # 6h du matin, heure de Berlin
-HEURE_FIN = 21    # 21h, heure de Berlin
-
 EMAIL_EXPEDITEUR = os.environ["GMAIL_ADDRESS"]
 EMAIL_MOT_DE_PASSE = os.environ["GMAIL_APP_PASSWORD"]
 EMAIL_DESTINATAIRE = os.environ["GMAIL_TO"]
 
 FICHIER_ETAT = Path(__file__).parent / "dernier_etat_alerte.txt"
-
-
-def dans_la_plage_horaire() -> bool:
-    """Vérifie s'il est actuellement entre HEURE_DEBUT et HEURE_FIN à Berlin."""
-    heure_berlin = datetime.now(ZoneInfo("Europe/Berlin")).hour
-    return HEURE_DEBUT <= heure_berlin < HEURE_FIN
 
 
 def recuperer_prix_super() -> float:
@@ -88,10 +79,6 @@ def ecrire_dernier_prix(prix: float):
 
 
 def main():
-    if not dans_la_plage_horaire():
-        print(f"Hors plage horaire ({HEURE_DEBUT}h-{HEURE_FIN}h, heure de Berlin) — vérification ignorée.")
-        return
-
     try:
         prix = recuperer_prix_super()
     except Exception as e:
