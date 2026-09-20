@@ -16,7 +16,7 @@ from zoneinfo import ZoneInfo
 import requests
 
 URL = "https://standorte.star.de/niedersachsen/oldenburg/bloherfelder-str.-126/581"
-SEUIL = 2.3  # €/L
+SEUIL = 2.2  # €/L
 
 HEURE_DEBUT = 6   # 6h du matin, heure de Berlin
 HEURE_FIN = 21    # 21h, heure de Berlin
