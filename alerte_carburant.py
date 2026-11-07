@@ -16,7 +16,7 @@ from pathlib import Path
 import requests
 
 URL = "https://standorte.star.de/niedersachsen/oldenburg/bloherfelder-str.-126/581"
-SEUIL = 2.2  # €/L
+SEUIL = 2 # €/L
 
 EMAIL_EXPEDITEUR = os.environ["GMAIL_ADDRESS"]
 EMAIL_MOT_DE_PASSE = os.environ["GMAIL_APP_PASSWORD"]
